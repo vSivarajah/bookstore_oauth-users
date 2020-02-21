@@ -8,10 +8,14 @@ import (
 
 type Service interface {
 	GetById(string) (*AccessToken, *errors.RestErr)
+	Create(AccessToken) *errors.RestErr
+	UpdateExpirationTime(AccessToken) *errors.RestErr
 }
 
 type Repository interface {
 	GetById(string) (*AccessToken, *errors.RestErr)
+	Create(AccessToken) *errors.RestErr
+	UpdateExpirationTime(AccessToken) *errors.RestErr
 }
 
 type service struct {
@@ -34,4 +38,18 @@ func (s *service) GetById(accessTokenId string) (*AccessToken, *errors.RestErr) 
 		return nil, err
 	}
 	return accessToken, nil
+}
+
+func (s *service) Create(accessToken AccessToken) *errors.RestErr {
+	if err := accessToken.Validate(); err != nil {
+		return err
+	}
+	return s.repository.Create(accessToken)
+}
+
+func (s *service) UpdateExpirationTime(accessToken AccessToken) *errors.RestErr {
+	if err := accessToken.Validate(); err != nil {
+		return err
+	}
+	return s.repository.UpdateExpirationTime(accessToken)
 }
